@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<section>
+  <h2>Marketplace de proveedores industriales</h2>
+  <p>📌 Pega aquí tu HTML/CSS del Home y del buscador. Esta plantilla solo marca la estructura EJS.</p>
+
+  <form method="get" action="/" class="filters">
+    <input type="text" name="q" value="<%= filters.query %>" placeholder="Buscar por texto..." />
+    <select name="category">
+      <option value="">Todas las categorías</option>
+      <option value="MECANICO" <%= filters.category === 'MECANICO' ? 'selected' : '' %>>Mecánico</option>
+      <option value="ELECTRICO" <%= filters.category === 'ELECTRICO' ? 'selected' : '' %>>Eléctrico</option>
+      <option value="REFRIGERACION" <%= filters.category === 'REFRIGERACION' ? 'selected' : '' %>>Refrigeración</option>
+    </select>
+    <select name="sort">
+      <option value="rating_desc" <%= filters.sort === 'rating_desc' ? 'selected' : '' %>>Rating mayor a menor</option>
+      <option value="rating_asc" <%= filters.sort === 'rating_asc' ? 'selected' : '' %>>Rating menor a mayor</option>
+    </select>
+    <button type="submit">Filtrar</button>
+  </form>
+</section>
+
+<section class="grid">
+  <% providers.forEach(provider => { %>
+    <article class="card">
+      <h3><a href="/providers/<%= provider.id %>"><%= provider.companyName %></a></h3>
+      <p>Categoría: <%= provider.category %></p>
+      <p>Verificado: <%= provider.verified ? 'Sí' : 'No' %></p>
+      <p>Rating: <%= provider.ratingAvg.toFixed(1) %> (<%= provider.reviewCount %> reseñas)</p>
+      <p>Plan: <%= provider.plan %> <%= provider.featured ? '⭐ Destacado' : '' %></p>
+      <p><%= provider.description %></p>
+    </article>
+  <% }) %>
+</section>
+
+<%- include('../partials/footer') %>

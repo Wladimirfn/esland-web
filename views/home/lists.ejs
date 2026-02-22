@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<section>
+  <h2>Mis listas guardadas</h2>
+  <p>Plan actual: <strong><%= currentUser.subscription %></strong></p>
+  <% if (currentUser.subscription === 'FREE') { %>
+    <p>FREE: máximo <%= freeLimits.FREE_LIST_LIMIT %> lista y <%= freeLimits.FREE_PROVIDER_LIMIT %> proveedores por lista.</p>
+    <form method="post" action="/lists/activate-pro">
+      <button type="submit">Activar PRO (Mock)</button>
+    </form>
+  <% } %>
+
+  <h3>Crear lista</h3>
+  <form method="post" action="/lists">
+    <input type="text" name="name" placeholder="Ej: Proveedores norte" required />
+    <button type="submit">Crear</button>
+  </form>
+
+  <h3>Tus listas</h3>
+  <% lists.forEach(list => { %>
+    <article class="card">
+      <h4><%= list.name %></h4>
+      <ul>
+        <% list.providers.forEach(item => { %>
+          <li><a href="/providers/<%= item.provider.id %>"><%= item.provider.companyName %></a></li>
+        <% }) %>
+      </ul>
+    </article>
+  <% }) %>
+</section>
+<%- include('../partials/footer') %>

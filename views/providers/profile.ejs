@@ -1,0 +1,84 @@
+<%- include('../partials/header') %>
+<section>
+  <h2>Perfil de Proveedor</h2>
+  <p>📌 Pega aquí el HTML/CSS final de tu perfil.</p>
+
+  <article class="provider-profile">
+    <% if (provider.logoUrl) { %>
+      <img src="<%= provider.logoUrl %>" alt="Logo <%= provider.companyName %>" class="logo" />
+    <% } %>
+    <h3><%= provider.companyName %> <%= provider.verified ? '✅ Verificado' : '' %></h3>
+    <p>Rating: <%= provider.ratingAvg.toFixed(1) %> (<%= provider.reviewCount %> reseñas)</p>
+    <p><%= provider.description %></p>
+    <p>Contacto: <%= provider.contactEmail %></p>
+    <p>Teléfono: <%= provider.showPhone && provider.phone ? provider.phone : 'Oculto por privacidad' %></p>
+    <p>Tarifa: <%= provider.hourlyRate ? '$' + provider.hourlyRate + ' / hora' : 'No publicada' %></p>
+
+    <h4>Galería de trabajos</h4>
+    <% if (provider.plan === 'PRO') { %>
+      <div class="gallery">
+        <% provider.gallery.forEach(img => { %>
+          <figure>
+            <img src="<%= img.imageUrl %>" alt="Trabajo de <%= provider.companyName %>" />
+            <figcaption><%= img.caption || '' %></figcaption>
+          </figure>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>La galería está activa solo para plan PRO.</p>
+    <% } %>
+
+    <form method="post" action="/providers/<%= provider.id %>/activate-pro">
+      <button type="submit">Activar PRO (Mock)</button>
+    </form>
+  </article>
+
+  <section>
+    <h4>Botón de contacto</h4>
+    <form>
+      <label>Mensaje <textarea placeholder="Tu solicitud..."></textarea></label>
+      <button type="button">Enviar (MVP visual)</button>
+    </form>
+  </section>
+
+  <section>
+    <h4>Reseñas</h4>
+    <% if (currentUser && (currentUser.role === 'USER' || currentUser.role === 'ADMIN')) { %>
+      <form method="post" action="/providers/<%= provider.id %>/reviews">
+        <label>Estrellas (1-5) <input type="number" min="1" max="5" name="stars" required /></label>
+        <label>Comentario <textarea name="comment" required></textarea></label>
+        <button type="submit">Publicar reseña</button>
+      </form>
+    <% } %>
+
+    <% provider.reviews.forEach(review => { %>
+      <article class="review">
+        <strong><%= review.user.name %></strong> - <%= review.stars %>/5
+        <p><%= review.comment %></p>
+
+        <% if (review.providerReply) { %>
+          <p><strong>Respuesta del proveedor:</strong> <%= review.providerReply.reply %></p>
+        <% } %>
+
+        <% if (currentUser && (currentUser.id === provider.ownerId || currentUser.role === 'ADMIN')) { %>
+          <form method="post" action="/providers/reviews/<%= review.id %>/reply">
+            <textarea name="reply" required placeholder="Responder reseña"></textarea>
+            <button type="submit">Responder</button>
+          </form>
+        <% } %>
+      </article>
+    <% }) %>
+  </section>
+
+  <% if (currentUser && (currentUser.role === 'USER' || currentUser.role === 'ADMIN')) { %>
+    <section>
+      <h4>Guardar en listas</h4>
+      <form method="post" action="/lists/save/<%= provider.id %>">
+        <label>ID de lista <input type="number" name="listId" required /></label>
+        <button type="submit">Guardar proveedor</button>
+      </form>
+      <small>Tip MVP: primero crea una lista en "Mis listas".</small>
+    </section>
+  <% } %>
+</section>
+<%- include('../partials/footer') %>
