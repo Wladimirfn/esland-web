@@ -1,0 +1,33 @@
+<%- include('../partials/header') %>
+<section>
+  <h2>Productos y manuales</h2>
+  <p>Base de equipos (sin subida de PDFs). Solo links externos oficiales.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Marca</th>
+        <th>Descripción</th>
+        <th>Comprar</th>
+        <th>Manual</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% products.forEach(product => { %>
+        <tr>
+          <td><%= product.code %></td>
+          <td><%= product.brand %></td>
+          <td><%= product.description %></td>
+          <td>
+            <% if (product.buyUrl) { %><a href="<%= product.buyUrl %>" target="_blank" rel="noreferrer">Link externo</a><% } %>
+          </td>
+          <td>
+            <% if (product.manualUrl) { %><a href="<%= product.manualUrl %>" target="_blank" rel="noreferrer">Manual oficial</a><% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+<%- include('../partials/footer') %>

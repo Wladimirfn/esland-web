@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = env("DATABASE_PROVIDER")
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  PROVIDER
+  ADMIN
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+}
+
+enum ProviderPlan {
+  FREE
+  PRO
+}
+
+enum IndustrialCategory {
+  MECANICO
+  ELECTRICO
+  REFRIGERACION
+}
+
+model User {
+  id             Int               @id @default(autoincrement())
+  name           String
+  email          String            @unique
+  passwordHash   String
+  role           Role              @default(USER)
+  subscription   SubscriptionPlan  @default(FREE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  provider       Provider?
+  reviews        Review[]
+  lists          List[]
+  providerReplies ReviewProviderReply[]
+}
+
+model Provider {
+  id                         Int                   @id @default(autoincrement())
+  ownerId                    Int                   @unique
+  companyName                String
+  logoUrl                    String?
+  verified                   Boolean               @default(false)
+  ratingAvg                  Float                 @default(0)
+  reviewCount                Int                   @default(0)
+  description                String
+  contactEmail               String
+  phone                      String?
+  showPhone                  Boolean               @default(false)
+  hourlyRate                 Float?
+  category                   IndustrialCategory
+  plan                       ProviderPlan          @default(FREE)
+  featured                   Boolean               @default(false)
+  legalImagesAccepted        Boolean               @default(false)
+  legalImagesAcceptedAt      DateTime?
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
+  owner                      User                  @relation(fields: [ownerId], references: [id])
+  gallery                    ProviderGalleryImage[]
+  reviews                    Review[]
+  savedInLists               ListProvider[]
+}
+
+model ProviderGalleryImage {
+  id          Int       @id @default(autoincrement())
+  providerId  Int
+  imageUrl    String
+  caption     String?
+  createdAt   DateTime  @default(now())
+  provider    Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id               Int                   @id @default(autoincrement())
+  providerId       Int
+  userId           Int
+  stars            Int
+  comment          String
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  provider         Provider              @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerReply    ReviewProviderReply?
+
+  @@unique([providerId, userId])
+}
+
+model ReviewProviderReply {
+  id              Int      @id @default(autoincrement())
+  reviewId         Int      @unique
+  providerUserId   Int
+  reply            String
+  createdAt        DateTime @default(now())
+  review           Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  providerUser     User     @relation(fields: [providerUserId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique
+  brand           String
+  description     String
+  buyUrl          String?
+  manualUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model List {
+  id              Int            @id @default(autoincrement())
+  userId          Int
+  name            String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providers       ListProvider[]
+
+  @@unique([userId, name])
+}
+
+model ListProvider {
+  id              Int       @id @default(autoincrement())
+  listId          Int
+  providerId      Int
+  createdAt       DateTime  @default(now())
+  list            List      @relation(fields: [listId], references: [id], onDelete: Cascade)
+  provider        Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, providerId])
+}

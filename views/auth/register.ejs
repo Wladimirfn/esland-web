@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+<section>
+  <h2>Registro</h2>
+  <form method="post" action="/auth/register">
+    <label>Nombre <input type="text" name="name" required /></label>
+    <label>Email <input type="email" name="email" required /></label>
+    <label>Password <input type="password" name="password" required /></label>
+    <label>Tipo de cuenta
+      <select name="role">
+        <option value="USER">Cliente (USER)</option>
+        <option value="PROVIDER">Proveedor (PROVIDER)</option>
+      </select>
+    </label>
+    <label>
+      <input type="checkbox" name="legalImagesAccepted" />
+      Tengo derechos de las imágenes y acepto retiro por reclamo (solo obligatorio para proveedores).
+    </label>
+    <button type="submit">Crear cuenta</button>
+  </form>
+</section>
+<%- include('../partials/footer') %>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1><a href="/">IndustrialHub Chile</a></h1>
+    <nav>
+      <a href="/">Marketplace</a>
+      <a href="/products">Productos/Manuales</a>
+      <% if (currentUser && (currentUser.role === 'USER' || currentUser.role === 'ADMIN')) { %>
+        <a href="/lists">Mis listas</a>
+      <% } %>
+      <% if (!currentUser) { %>
+        <a href="/auth/login">Login</a>
+        <a href="/auth/register">Registro</a>
+      <% } else { %>
+        <form action="/auth/logout" method="post" class="inline-form">
+          <button type="submit">Salir (<%= currentUser.name %>)</button>
+        </form>
+      <% } %>
+    </nav>
+  </header>
+
+  <% if (messages.error.length) { %>
+    <div class="alert error"><%= messages.error[0] %></div>
+  <% } %>
+  <% if (messages.success.length) { %>
+    <div class="alert success"><%= messages.success[0] %></div>
+  <% } %>
+
+  <main class="container">
